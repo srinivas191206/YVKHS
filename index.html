@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vaidhya Setu - Rural Health Portal</title>
+    <meta name="description" content="Vaidhya Setu - Connecting Doctors, Empowering Rural Healthcare. A comprehensive digital health platform for rural health centers.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Healthcare Theme Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'healing-mint': 'hsl(152, 45%, 82%)',
+                        'healing-mint-soft': 'hsl(152, 30%, 92%)',
+                        'sky-blue': 'hsl(198, 70%, 85%)',
+                        'sky-blue-soft': 'hsl(198, 40%, 95%)',
+                        'warm-coral': 'hsl(15, 75%, 88%)',
+                        'warm-coral-soft': 'hsl(15, 45%, 95%)',
+                        'deep-teal': 'hsl(158, 35%, 45%)',
+                        'deep-blue': 'hsl(198, 45%, 55%)',
+                        'success-green': 'hsl(152, 60%, 55%)',
+                        'warning-amber': 'hsl(35, 85%, 70%)',
+                        'error-rose': 'hsl(0, 70%, 70%)',
+                        'info-blue': 'hsl(198, 80%, 65%)',
+                    },
+                    backgroundImage: {
+                        'gradient-primary': 'linear-gradient(135deg, hsl(152, 45%, 82%), hsl(198, 70%, 85%))',
+                        'gradient-card': 'linear-gradient(180deg, hsl(152, 30%, 98%), hsl(152, 20%, 96%))',
+                        'gradient-hero': 'linear-gradient(135deg, hsl(158, 35%, 45%), hsl(198, 45%, 55%))',
+                    },
+                    boxShadow: {
+                        'card': '0 4px 16px -4px hsl(158, 35%, 45%, 0.1)',
+                        'elevated': '0 8px 32px -8px hsl(158, 35%, 45%, 0.15)',
+                        'glow': '0 0 20px hsl(152, 45%, 82%, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <style>
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .transition-all {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .hover\:shadow-elevated:hover {
+            box-shadow: 0 8px 32px -8px hsl(158, 35%, 45%, 0.15);
+        }
+        .healthcare-card {
+            background: linear-gradient(180deg, hsl(152, 30%, 98%), hsl(152, 20%, 96%));
+            box-shadow: 0 4px 16px -4px hsl(158, 35%, 45%, 0.1);
+        }
+        .sidebar-active {
+            background: hsl(152, 45%, 82%);
+            color: hsl(158, 35%, 45%);
+            border: 1px solid hsl(152, 45%, 82%);
+        }
+        .emergency-pulse {
+            animation: pulse 1s infinite;
+            background: hsl(0, 70%, 70%);
+        }
+        .section {
+            display: none;
+        }
+        .section.active {
+            display: block !important;
+        }
+        .section.hidden {
+            display: none !important;
+        }
+        .login-container {
+            min-height: 100vh;
+            background: linear-gradient(135deg, hsl(158, 35%, 45%), hsl(198, 45%, 55%));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .login-form {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 100%;
+            max-width: 400px;
+        }
+        .login-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        .login-input:focus {
+            outline: none;
+            border-color: hsl(158, 35%, 45%);
+            box-shadow: 0 0 0 3px hsla(158, 35%, 45%, 0.1);
+        }
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, hsl(158, 35%, 45%), hsl(198, 45%, 55%));
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        .login-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .app-container {
+            display: none;
+        }
+        .app-container.authenticated {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- Login Page -->
+    <div id="login-page" class="login-container">
+        <div class="login-form">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <span class="text-deep-teal text-2xl font-bold">V</span>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900 mb-2">Vaidhya Setu</h1>
+                <p class="text-gray-600 text-sm">Healthcare Management System</p>
+                <p class="text-gray-500 text-xs mt-1">Admin Login Portal</p>
+            </div>
+            
+            <form id="login-form" class="space-y-6">
+                <div id="login-error" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        <span id="error-message">Invalid credentials. Please try again.</span>
+                    </div>
+                </div>
+                
+                <div>
+                    <label for="admin-id" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i data-lucide="user" class="w-4 h-4 inline mr-2"></i>
+                        Admin User ID
+                    </label>
+                    <input 
+                        type="text" 
+                        id="admin-id" 
+                        name="admin-id"
+                        class="login-input" 
+                        placeholder="Enter your admin ID"
+                        required
+                        autocomplete="username"
+                    >
+                </div>
+                
+                <div>
+                    <label for="admin-password" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i data-lucide="lock" class="w-4 h-4 inline mr-2"></i>
+                        Password
+                    </label>
+                    <div class="relative">
+                        <input 
+                            type="password" 
+                            id="admin-password" 
+                            name="admin-password"
+                            class="login-input pr-12" 
+                            placeholder="Enter your password"
+                            required
+                            autocomplete="current-password"
+                        >
+                        <button 
+                            type="button" 
+                            id="toggle-password" 
+                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                        >
+                            <i data-lucide="eye" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between text-sm">
+                    <label class="flex items-center">
+                        <input type="checkbox" id="remember-me" class="rounded border-gray-300 text-deep-teal focus:ring-deep-teal mr-2">
+                        <span class="text-gray-600">Remember me</span>
+                    </label>
+                    <a href="#" class="text-deep-teal hover:text-deep-teal/80 font-medium">Forgot password?</a>
+                </div>
+                
+                <button type="submit" id="login-submit" class="login-btn">
+                    <span id="login-text">Sign In</span>
+                    <span id="login-loading" class="hidden">
+                        <i data-lucide="loader" class="w-4 h-4 inline mr-2 animate-spin"></i>
+                        Signing in...
+                    </span>
+                </button>
+                
+                <div class="mt-6 pt-6 border-t border-gray-200">
+                    <div class="text-center">
+                        <p class="text-xs text-gray-500 mb-2">Demo Credentials (for testing):</p>
+                        <div class="bg-gray-50 p-3 rounded-lg text-xs text-gray-600">
+                            <p><strong>User ID:</strong> admin</p>
+                            <p><strong>Password:</strong> admin123</p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application (Hidden until login) -->
+    <div id="app" class="app-container">
+        <!-- Header -->
+        <header class="bg-gradient-hero text-white border-b border-opacity-20 sticky top-0 z-50 shadow-elevated">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center overflow-hidden">
+                            <div class="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
+                                <span class="text-deep-teal text-xl font-bold">V</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold">Vaidhya Setu</h1>
+                            <p class="text-sm text-white/80">Connecting Doctors, Empowering Rural Healthcare</p>
+                        </div>
+                    </div>
+
+                    <div class="hidden md:flex items-center gap-4">
+                        <div class="text-right">
+                            <p class="text-sm font-medium">Dr. Sarah Miller</p>
+                            <p class="text-xs text-white/70">Health Center Admin</p>
+                        </div>
+                        <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                            <i data-lucide="users" class="w-5 h-5"></i>
+                        </div>
+                        <button onclick="logout()" class="text-white hover:bg-white/20 p-2 rounded-lg transition-colors" title="Logout">
+                            <i data-lucide="log-out" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <button class="md:hidden text-white hover:bg-white/20 p-2 rounded-lg" onclick="toggleMobileMenu()">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-7xl mx-auto flex">
+            <!-- Sidebar -->
+            <aside id="sidebar" class="hidden md:block w-64 bg-white border-r border-gray-200 shadow-card">
+                <nav class="p-4 space-y-2">
+                    <button onclick="showSection('dashboard')" class="sidebar-btn w-full justify-start gap-3 h-12 px-4 py-2 rounded-xl transition-all flex items-center text-gray-700 hover:bg-healing-mint-soft sidebar-active">
+                        <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                        <span>Dashboard</span>
+                    </button>
+                    <button onclick="showSection('patients')" class="sidebar-btn w-full justify-start gap-3 h-12 px-4 py-2 rounded-xl transition-all flex items-center text-gray-700 hover:bg-healing-mint-soft">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                        <span>Patient Registration</span>
+                    </button>
+                    <button onclick="showSection('doctors')" class="sidebar-btn w-full justify-start gap-3 h-12 px-4 py-2 rounded-xl transition-all flex items-center text-gray-700 hover:bg-healing-mint-soft">
+                        <i data-lucide="stethoscope" class="w-5 h-5"></i>
+                        <span>Doctor Connect</span>
+                    </button>
+                    <button onclick="showSection('consultations')" class="sidebar-btn w-full justify-start gap-3 h-12 px-4 py-2 rounded-xl transition-all flex items-center text-gray-700 hover:bg-healing-mint-soft">
+                        <i data-lucide="video" class="w-5 h-5"></i>
+                        <span>Consultations</span>
+                    </button>
+                    <button onclick="showSection('emergency')" class="sidebar-btn w-full justify-start gap-3 h-12 px-4 py-2 rounded-xl transition-all flex items-center text-gray-700 hover:bg-healing-mint-soft">
+                        <i data-lucide="alert-triangle" class="w-5 h-5"></i>
+                        <span>Emergency SOS</span>
+                    </button>
+                    <button onclick="showSection('medicines')" class="sidebar-btn w-full justify-start gap-3 h-12 px-4 py-2 rounded-xl transition-all flex items-center text-gray-700 hover:bg-healing-mint-soft">
+                        <i data-lucide="pill" class="w-5 h-5"></i>
+                        <span>Medicine Inventory</span>
+                    </button>
+                    <button onclick="showSection('reports')" class="sidebar-btn w-full justify-start gap-3 h-12 px-4 py-2 rounded-xl transition-all flex items-center text-gray-700 hover:bg-healing-mint-soft">
+                        <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                        <span>Reports & Analytics</span>
+                    </button>
+                    <button onclick="showSection('settings')" class="sidebar-btn w-full justify-start gap-3 h-12 px-4 py-2 rounded-xl transition-all flex items-center text-gray-700 hover:bg-healing-mint-soft">
+                        <i data-lucide="settings" class="w-5 h-5"></i>
+                        <span>Settings</span>
+                    </button>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-4 md:p-6">
+                <div id="content">
+                    <!-- Dashboard Section -->
+                    <div id="dashboard-section" class="section active">
+                        <div class="space-y-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
+                                <p class="text-gray-600">Welcome back! Here's what's happening at your health center today.</p>
+                            </div>
+
+                            <!-- Quick Stats -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div class="healthcare-card rounded-2xl p-6 text-center border border-healing-mint/30">
+                                    <div class="w-12 h-12 bg-healing-mint rounded-xl flex items-center justify-center mx-auto mb-4">
+                                        <i data-lucide="users" class="w-6 h-6 text-deep-teal"></i>
+                                    </div>
+                                    <div class="text-2xl font-bold text-deep-teal">12</div>
+                                    <p class="text-sm text-gray-600">Patients Today</p>
+                                </div>
+
+                                <div class="healthcare-card rounded-2xl p-6 text-center border border-sky-blue/30">
+                                    <div class="w-12 h-12 bg-sky-blue rounded-xl flex items-center justify-center mx-auto mb-4">
+                                        <i data-lucide="stethoscope" class="w-6 h-6 text-deep-blue"></i>
+                                    </div>
+                                    <div class="text-2xl font-bold text-deep-blue">8</div>
+                                    <p class="text-sm text-gray-600">Consultations</p>
+                                </div>
+
+                                <div class="healthcare-card rounded-2xl p-6 text-center border border-success-green/30">
+                                    <div class="w-12 h-12 bg-success-green/20 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                        <i data-lucide="pill" class="w-6 h-6 text-success-green"></i>
+                                    </div>
+                                    <div class="text-2xl font-bold text-success-green">45</div>
+                                    <p class="text-sm text-gray-600">Medicines Dispensed</p>
+                                </div>
+
+                                <div class="healthcare-card rounded-2xl p-6 text-center border border-warm-coral/30">
+                                    <div class="w-12 h-12 bg-warm-coral rounded-xl flex items-center justify-center mx-auto mb-4">
+                                        <i data-lucide="alert-triangle" class="w-6 h-6 text-error-rose"></i>
+                                    </div>
+                                    <div class="text-2xl font-bold text-error-rose">2</div>
+                                    <p class="text-sm text-gray-600">Emergency Cases</p>
+                                </div>
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <div class="healthcare-card rounded-2xl p-6 border border-healing-mint/30">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <button onclick="showSection('patients')" class="bg-healing-mint text-deep-teal p-4 rounded-xl hover:shadow-elevated transition-all h-20 flex flex-col items-center justify-center gap-2">
+                                        <i data-lucide="users" class="w-6 h-6"></i>
+                                        <span class="text-sm">Register Patient</span>
+                                    </button>
+                                    
+                                    <button onclick="showSection('doctors')" class="bg-sky-blue text-deep-blue p-4 rounded-xl hover:shadow-elevated transition-all h-20 flex flex-col items-center justify-center gap-2">
+                                        <i data-lucide="stethoscope" class="w-6 h-6"></i>
+                                        <span class="text-sm">Connect Doctor</span>
+                                    </button>
+                                    
+                                    <button onclick="showSection('medicines')" class="border border-healing-mint text-deep-teal bg-transparent hover:bg-healing-mint-soft p-4 rounded-xl transition-all h-20 flex flex-col items-center justify-center gap-2">
+                                        <i data-lucide="pill" class="w-6 h-6"></i>
+                                        <span class="text-sm">Check Inventory</span>
+                                    </button>
+                                    
+                                    <button onclick="showSection('emergency')" class="emergency-pulse text-white p-4 rounded-xl hover:shadow-elevated transition-all h-20 flex flex-col items-center justify-center gap-2">
+                                        <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                                        <span class="text-sm">Emergency SOS</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Section -->
+                    <div id="emergency-section" class="section hidden">
+                        <div class="space-y-6">
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Emergency Services</h2>
+                                <p class="text-gray-600">One-click access to emergency medical assistance</p>
+                            </div>
+
+                            <div class="flex flex-col items-center justify-center min-h-[400px] space-y-8">
+                                <button onclick="triggerEmergency()" class="emergency-pulse w-48 h-48 rounded-full text-2xl font-bold shadow-glow text-white flex flex-col items-center justify-center gap-3">
+                                    <i data-lucide="alert-triangle" class="w-16 h-16"></i>
+                                    <span>SOS</span>
+                                    <span class="text-sm font-normal">Emergency Call</span>
+                                </button>
+
+                                <div class="text-center space-y-2">
+                                    <p class="text-lg font-medium text-error-rose">Emergency Hotline</p>
+                                    <p class="text-2xl font-bold text-deep-teal">108</p>
+                                    <p class="text-sm text-gray-600">Available 24/7</p>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="healthcare-card rounded-2xl p-6 border border-warm-coral/30">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                        <i data-lucide="phone" class="w-5 h-5 text-error-rose"></i>
+                                        Direct Emergency Contacts
+                                    </h3>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between items-center p-2">
+                                            <span class="font-medium">District Hospital</span>
+                                            <span class="text-deep-teal">+91 9876543210</span>
+                                        </div>
+                                        <div class="flex justify-between items-center p-2">
+                                            <span class="font-medium">Police Station</span>
+                                            <span class="text-deep-teal">100</span>
+                                        </div>
+                                        <div class="flex justify-between items-center p-2">
+                                            <span class="font-medium">Fire Department</span>
+                                            <span class="text-deep-teal">101</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="healthcare-card rounded-2xl p-6 border border-sky-blue/30">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                        <i data-lucide="map-pin" class="w-5 h-5 text-info-blue"></i>
+                                        Location Services
+                                    </h3>
+                                    <div class="space-y-3">
+                                        <div class="p-3 bg-info-blue/10 rounded-xl">
+                                            <p class="font-medium text-info-blue">GPS Status: Active</p>
+                                            <p class="text-sm text-gray-600">Location will be shared automatically</p>
+                                        </div>
+                                        <div class="text-sm text-gray-600 space-y-1">
+                                            <p>Coordinates: 28.6139° N, 77.2090° E</p>
+                                            <p>Address: Village Health Center, Sector 12, Rural District</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Other sections (hidden by default) -->
+                    <div id="patients-section" class="section hidden">
+                        <div class="space-y-6">
+                            <h2 class="text-2xl font-bold text-gray-900">Patient Registration</h2>
+                            <div class="healthcare-card rounded-2xl p-6">
+                                <div class="mb-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                        <i data-lucide="user-plus" class="w-5 h-5 text-deep-teal"></i>
+                                        Register New Patient
+                                    </h3>
+                                    <form class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                                            <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-teal focus:border-transparent" placeholder="Enter patient's full name">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Age</label>
+                                            <input type="number" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-teal focus:border-transparent" placeholder="Age">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                            <input type="tel" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-teal focus:border-transparent" placeholder="Phone number">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                                            <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-teal focus:border-transparent">
+                                                <option>Select gender</option>
+                                                <option>Male</option>
+                                                <option>Female</option>
+                                                <option>Other</option>
+                                            </select>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                                            <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-teal focus:border-transparent" rows="3" placeholder="Full address"></textarea>
+                                        </div>
+                                        <div class="md:col-span-2">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Chief Complaints</label>
+                                            <textarea class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-teal focus:border-transparent" rows="3" placeholder="Describe main symptoms and concerns"></textarea>
+                                        </div>
+                                        <div class="md:col-span-2 flex gap-4">
+                                            <button type="submit" class="bg-deep-teal text-white px-6 py-2 rounded-lg hover:bg-deep-teal/90 transition-colors">
+                                                Register Patient
+                                            </button>
+                                            <button type="button" class="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="doctors-section" class="section hidden">
+                        <div class="space-y-6">
+                            <h2 class="text-2xl font-bold text-gray-900">Doctor Connect</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="healthcare-card rounded-2xl p-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                        <i data-lucide="stethoscope" class="w-5 h-5 text-deep-teal"></i>
+                                        Dr. Rajesh Kumar
+                                    </h3>
+                                    <div class="space-y-3">
+                                        <p class="text-sm text-gray-600">General Medicine • 15 years experience</p>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-3 h-3 bg-success-green rounded-full"></div>
+                                            <span class="text-sm font-medium text-success-green">Available</span>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button class="bg-deep-teal text-white px-4 py-2 rounded-lg text-sm hover:bg-deep-teal/90">
+                                                <i data-lucide="video" class="w-4 h-4 inline mr-1"></i>
+                                                Video Call
+                                            </button>
+                                            <button class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-50">
+                                                <i data-lucide="phone" class="w-4 h-4 inline mr-1"></i>
+                                                Audio Call
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="healthcare-card rounded-2xl p-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                                        <i data-lucide="stethoscope" class="w-5 h-5 text-deep-teal"></i>
+                                        Dr. Priya Sharma
+                                    </h3>
+                                    <div class="space-y-3">
+                                        <p class="text-sm text-gray-600">Pediatrics • 12 years experience</p>
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-3 h-3 bg-warning-amber rounded-full"></div>
+                                            <span class="text-sm font-medium text-warning-amber">In Consultation</span>
+                                        </div>
+                                        <div class="flex gap-2">
+                                            <button disabled class="bg-gray-300 text-gray-500 px-4 py-2 rounded-lg text-sm cursor-not-allowed">
+                                                <i data-lucide="video" class="w-4 h-4 inline mr-1"></i>
+                                                Video Call
+                                            </button>
+                                            <button disabled class="border border-gray-300 text-gray-400 px-4 py-2 rounded-lg text-sm cursor-not-allowed">
+                                                <i data-lucide="phone" class="w-4 h-4 inline mr-1"></i>
+                                                Audio Call
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="consultations-section" class="section hidden">
+                        <div class="space-y-6">
+                            <h2 class="text-2xl font-bold text-gray-900">Consultation Dashboard</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                <div class="healthcare-card rounded-xl p-4 text-center">
+                                    <div class="text-2xl font-bold text-deep-teal">3</div>
+                                    <p class="text-sm text-gray-600">Pending Consultations</p>
+                                </div>
+                                <div class="healthcare-card rounded-xl p-4 text-center">
+                                    <div class="text-2xl font-bold text-info-blue">1</div>
+                                    <p class="text-sm text-gray-600">Live Consultations</p>
+                                </div>
+                                <div class="healthcare-card rounded-xl p-4 text-center">
+                                    <div class="text-2xl font-bold text-success-green">8</div>
+                                    <p class="text-sm text-gray-600">Completed Today</p>
+                                </div>
+                            </div>
+                            
+                            <div class="healthcare-card rounded-2xl p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Consultations</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p class="font-medium">Ramesh Kumar</p>
+                                            <p class="text-sm text-gray-600">Hypertension Follow-up • Dr. Rajesh Kumar</p>
+                                        </div>
+                                        <span class="bg-success-green/20 text-success-green px-2 py-1 rounded text-sm">Completed</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p class="font-medium">Sunita Devi</p>
+                                            <p class="text-sm text-gray-600">Fever • Dr. Priya Sharma</p>
+                                        </div>
+                                        <span class="bg-info-blue/20 text-info-blue px-2 py-1 rounded text-sm">In Progress</span>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p class="font-medium">Arjun Singh</p>
+                                            <p class="text-sm text-gray-600">Diabetes Check • Waiting for Doctor</p>
+                                        </div>
+                                        <span class="bg-warning-amber/20 text-warning-amber px-2 py-1 rounded text-sm">Pending</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="medicines-section" class="section hidden">
+                        <div class="space-y-6">
+                            <h2 class="text-2xl font-bold text-gray-900">Medicine Inventory</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                                <div class="healthcare-card rounded-xl p-4 text-center">
+                                    <div class="text-2xl font-bold text-success-green">245</div>
+                                    <p class="text-sm text-gray-600">Total Medicines</p>
+                                </div>
+                                <div class="healthcare-card rounded-xl p-4 text-center">
+                                    <div class="text-2xl font-bold text-warning-amber">12</div>
+                                    <p class="text-sm text-gray-600">Low Stock</p>
+                                </div>
+                                <div class="healthcare-card rounded-xl p-4 text-center">
+                                    <div class="text-2xl font-bold text-error-rose">3</div>
+                                    <p class="text-sm text-gray-600">Out of Stock</p>
+                                </div>
+                                <div class="healthcare-card rounded-xl p-4 text-center">
+                                    <div class="text-2xl font-bold text-deep-teal">45</div>
+                                    <p class="text-sm text-gray-600">Dispensed Today</p>
+                                </div>
+                            </div>
+                            
+                            <div class="healthcare-card rounded-2xl p-6">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Stock Status</h3>
+                                <div class="space-y-3">
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p class="font-medium">Paracetamol 500mg</p>
+                                            <p class="text-sm text-gray-600">Pain Relief</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-sm font-medium">Stock: 150</span>
+                                            <p class="text-sm text-success-green">Good Stock</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p class="font-medium">Amoxicillin 250mg</p>
+                                            <p class="text-sm text-gray-600">Antibiotic</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-sm font-medium">Stock: 8</span>
+                                            <p class="text-sm text-warning-amber">Low Stock</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p class="font-medium">Insulin 100IU</p>
+                                            <p class="text-sm text-gray-600">Diabetes</p>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-sm font-medium">Stock: 0</span>
+                                            <p class="text-sm text-error-rose">Out of Stock</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="reports-section" class="section hidden">
+                        <div class="space-y-6">
+                            <h2 class="text-2xl font-bold text-gray-900">Reports & Analytics</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="healthcare-card rounded-2xl p-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Monthly Overview</h3>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between">
+                                            <span>Total Patients</span>
+                                            <span class="font-medium">342</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Consultations</span>
+                                            <span class="font-medium">198</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Prescriptions</span>
+                                            <span class="font-medium">156</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Emergency Cases</span>
+                                            <span class="font-medium">12</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="healthcare-card rounded-2xl p-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Popular Treatments</h3>
+                                    <div class="space-y-3">
+                                        <div class="flex justify-between">
+                                            <span>Fever Treatment</span>
+                                            <span class="font-medium">45%</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Hypertension</span>
+                                            <span class="font-medium">32%</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Diabetes Care</span>
+                                            <span class="font-medium">28%</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>Respiratory Issues</span>
+                                            <span class="font-medium">18%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="settings-section" class="section hidden">
+                        <div class="space-y-6">
+                            <h2 class="text-2xl font-bold text-gray-900">Settings</h2>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="healthcare-card rounded-2xl p-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Profile Settings</h3>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Center Name</label>
+                                            <input type="text" value="Village Health Center" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Administrator</label>
+                                            <input type="text" value="Dr. Sarah Miller" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Contact Number</label>
+                                            <input type="tel" value="+91 9876543210" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                        </div>
+                                        <button class="bg-deep-teal text-white px-4 py-2 rounded-lg hover:bg-deep-teal/90">
+                                            Save Changes
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="healthcare-card rounded-2xl p-6">
+                                    <h3 class="text-lg font-semibold text-gray-900 mb-4">System Settings</h3>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between">
+                                            <span>Emergency Alerts</span>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" checked class="sr-only peer">
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-deep-teal"></div>
+                                            </label>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span>SMS Notifications</span>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" checked class="sr-only peer">
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-deep-teal"></div>
+                                            </label>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span>Auto Backup</span>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" class="sr-only peer">
+                                                <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:bg-deep-teal"></div>
+                                            </label>
+                                        </div>
+                                        <button class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">
+                                            Reset System
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div> <!-- End of app container -->
+
+    <!-- Emergency Alert Modal -->
+    <div id="emergency-modal" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+        <div class="healthcare-card max-w-md w-full text-center rounded-2xl p-8 border">
+            <div class="w-20 h-20 bg-error-rose rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                <i data-lucide="alert-triangle" class="w-10 h-10 text-white"></i>
+            </div>
+            
+            <div id="emergency-content">
+                <h2 class="text-2xl font-bold text-error-rose mb-2">Emergency Alert Sent</h2>
+                <p class="text-gray-600 mb-4">Connecting to nearest ambulance service...</p>
+                <div class="flex justify-center gap-1">
+                    <div class="w-2 h-2 bg-error-rose rounded-full animate-pulse"></div>
+                    <div class="w-2 h-2 bg-error-rose rounded-full animate-pulse" style="animation-delay: 0.15s;"></div>
+                    <div class="w-2 h-2 bg-error-rose rounded-full animate-pulse" style="animation-delay: 0.3s;"></div>
+                </div>
+            </div>
+            
+            <button onclick="closeEmergency()" class="mt-6 bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors">Close</button>
+        </div>
+    </div>
+
+    <script>
+        // Authentication state
+        let isAuthenticated = false;
+        
+        // Demo credentials (in real app, this would be handled by backend)
+        const DEMO_CREDENTIALS = {
+            userId: 'admin',
+            password: 'admin123'
+        };
+        
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Login functionality
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const adminId = document.getElementById('admin-id').value.trim();
+            const password = document.getElementById('admin-password').value;
+            const errorDiv = document.getElementById('login-error');
+            const submitBtn = document.getElementById('login-submit');
+            const loginText = document.getElementById('login-text');
+            const loginLoading = document.getElementById('login-loading');
+            
+            // Clear previous errors
+            errorDiv.classList.add('hidden');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            loginText.classList.add('hidden');
+            loginLoading.classList.remove('hidden');
+            
+            // Simulate API call delay (remove in production)
+            setTimeout(() => {
+                // Validate credentials (replace with actual API call)
+                if (validateCredentials(adminId, password)) {
+                    // Success - show dashboard
+                    isAuthenticated = true;
+                    localStorage.setItem('isAuthenticated', 'true');
+                    localStorage.setItem('adminId', adminId);
+                    showDashboard();
+                } else {
+                    // Error - show error message
+                    showLoginError('Invalid user ID or password. Please check your credentials.');
+                }
+                
+                // Reset button state
+                submitBtn.disabled = false;
+                loginText.classList.remove('hidden');
+                loginLoading.classList.add('hidden');
+            }, 1500);
+        }
+        
+        function validateCredentials(userId, password) {
+            // Demo validation (replace with actual API call to your backend)
+            return userId === DEMO_CREDENTIALS.userId && password === DEMO_CREDENTIALS.password;
+            
+            // In production, this would be something like:
+            // return await fetch('/api/login', {
+            //     method: 'POST',
+            //     headers: { 'Content-Type': 'application/json' },
+            //     body: JSON.stringify({ userId, password })
+            // }).then(res => res.ok);
+        }
+        
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('login-error');
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+        
+        function showDashboard() {
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('app').classList.add('authenticated');
+            
+            // Initialize dashboard
+            showSectionProgrammatically('dashboard');
+            lucide.createIcons();
+            
+            // Update header with admin info
+            updateAdminInfo();
+        }
+        
+        function updateAdminInfo() {
+            const adminId = localStorage.getItem('adminId') || 'Admin';
+            // You can update the header admin name here if needed
+            // For now, keeping the default "Dr. Sarah Miller"
+        }
+        
+        function logout() {
+            isAuthenticated = false;
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('adminId');
+            document.getElementById('login-page').style.display = 'flex';
+            document.getElementById('app').classList.remove('authenticated');
+            
+            // Clear form
+            document.getElementById('login-form').reset();
+            document.getElementById('login-error').classList.add('hidden');
+        }
+        
+        // Toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('admin-password');
+            const toggleBtn = document.getElementById('toggle-password');
+            const icon = toggleBtn.querySelector('i');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.setAttribute('data-lucide', 'eye-off');
+            } else {
+                passwordInput.type = 'password';
+                icon.setAttribute('data-lucide', 'eye');
+            }
+            lucide.createIcons();
+        }
+        
+        // Check if user is already logged in
+        function checkAuthStatus() {
+            const savedAuth = localStorage.getItem('isAuthenticated');
+            if (savedAuth === 'true') {
+                isAuthenticated = true;
+                showDashboard();
+            }
+        }
+
+        // Navigation functions
+        function showSection(sectionName) {
+            if (!isAuthenticated) return;
+            
+            // Hide all sections by removing 'active' class and adding 'hidden' class
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section by adding 'active' class and removing 'hidden' class
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.classList.remove('hidden');
+            }
+            
+            // Update sidebar active state
+            const buttons = document.querySelectorAll('.sidebar-btn');
+            buttons.forEach(btn => btn.classList.remove('sidebar-active'));
+            
+            // Find the button that was clicked and make it active
+            if (event && event.target) {
+                const clickedButton = event.target.closest('.sidebar-btn');
+                if (clickedButton) {
+                    clickedButton.classList.add('sidebar-active');
+                }
+            }
+        }
+
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('hidden');
+        }
+
+        // Emergency functions
+        function triggerEmergency() {
+            const modal = document.getElementById('emergency-modal');
+            modal.classList.remove('hidden');
+            
+            // Simulate emergency progression
+            setTimeout(() => {
+                document.getElementById('emergency-content').innerHTML = `
+                    <h2 class="text-2xl font-bold text-success-green mb-2">Ambulance Located</h2>
+                    <p class="text-gray-600 mb-4">Emergency vehicle dispatched from District Hospital</p>
+                    <div class="flex items-center justify-center gap-2 text-info-blue">
+                        <i data-lucide="clock" class="w-5 h-5"></i>
+                        <span class="font-medium">ETA: 15 minutes</span>
+                    </div>
+                `;
+                lucide.createIcons();
+            }, 2000);
+            
+            setTimeout(() => {
+                document.getElementById('emergency-content').innerHTML = `
+                    <h2 class="text-2xl font-bold text-success-green mb-2">Help is Coming</h2>
+                    <p class="text-gray-600 mb-4">GPS location shared • Contact: +91 9876543210</p>
+                    <div class="flex items-center justify-center gap-2 text-deep-teal">
+                        <i data-lucide="map-pin" class="w-5 h-5"></i>
+                        <span class="text-sm">Location: Village Health Center, Sector 12</span>
+                    </div>
+                `;
+                lucide.createIcons();
+            }, 4000);
+        }
+
+        function closeEmergency() {
+            const modal = document.getElementById('emergency-modal');
+            modal.classList.add('hidden');
+            
+            // Reset content
+            document.getElementById('emergency-content').innerHTML = `
+                <h2 class="text-2xl font-bold text-error-rose mb-2">Emergency Alert Sent</h2>
+                <p class="text-gray-600 mb-4">Connecting to nearest ambulance service...</p>
+                <div class="flex justify-center gap-1">
+                    <div class="w-2 h-2 bg-error-rose rounded-full animate-pulse"></div>
+                    <div class="w-2 h-2 bg-error-rose rounded-full animate-pulse" style="animation-delay: 0.15s;"></div>
+                    <div class="w-2 h-2 bg-error-rose rounded-full animate-pulse" style="animation-delay: 0.3s;"></div>
+                </div>
+            `;
+        }
+
+        // Show dashboard by default
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+            
+            // Set up event listeners
+            document.getElementById('login-form').addEventListener('submit', handleLogin);
+            document.getElementById('toggle-password').addEventListener('click', togglePassword);
+            
+            // Check if user is already authenticated
+            checkAuthStatus();
+            
+            // If not authenticated, show login page
+            if (!isAuthenticated) {
+                document.getElementById('login-page').style.display = 'flex';
+                document.getElementById('app').classList.remove('authenticated');
+            }
+        });
+        
+        // Helper function to show section without event handling
+        function showSectionProgrammatically(sectionName) {
+            if (!isAuthenticated) return;
+            
+            // Hide all sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+                section.classList.add('hidden');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+                targetSection.classList.remove('hidden');
+            }
+            
+            // Update sidebar active state
+            const buttons = document.querySelectorAll('.sidebar-btn');
+            buttons.forEach(btn => btn.classList.remove('sidebar-active'));
+            
+            // Find dashboard button and make it active
+            const dashboardBtn = document.querySelector(`button[onclick="showSection('${sectionName}')"]`);
+            if (dashboardBtn) {
+                dashboardBtn.classList.add('sidebar-active');
+            }
+        }
+    </script>
+</body>
+</html>

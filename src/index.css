@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Rural Health Center Portal Design System
+All colors, gradients, fonts, etc defined here for caring, community-friendly interface.
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Base colors - soft, calming palette */
+    --background: 152 20% 97%;
+    --foreground: 158 12% 15%;
+    
+    /* Healthcare-focused color palette */
+    --healing-mint: 152 45% 82%;
+    --healing-mint-soft: 152 30% 92%;
+    --sky-blue: 198 70% 85%;
+    --sky-blue-soft: 198 40% 95%;
+    --warm-coral: 15 75% 88%;
+    --warm-coral-soft: 15 45% 95%;
+    --deep-teal: 158 35% 45%;
+    --deep-blue: 198 45% 55%;
+    
+    /* Status colors */
+    --success-green: 152 60% 55%;
+    --warning-amber: 35 85% 70%;
+    --error-rose: 0 70% 70%;
+    --info-blue: 198 80% 65%;
+    
+    /* Gradients for caring feel */
+    --gradient-primary: linear-gradient(135deg, hsl(152 45% 82%), hsl(198 70% 85%));
+    --gradient-card: linear-gradient(180deg, hsl(152 30% 98%), hsl(152 20% 96%));
+    --gradient-hero: linear-gradient(135deg, hsl(158 35% 45%), hsl(198 45% 55%));
+    
+    /* Shadows for depth and warmth */
+    --shadow-card: 0 4px 16px -4px hsl(158 35% 45% / 0.1);
+    --shadow-elevated: 0 8px 32px -8px hsl(158 35% 45% / 0.15);
+    --shadow-glow: 0 0 20px hsl(152 45% 82% / 0.3);
+    
+    /* Animation timings */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    /* Shadcn tokens mapped to healthcare palette */
+    --card: 152 30% 98%;
+    --card-foreground: 158 12% 15%;
+
+    --popover: 152 30% 98%;
+    --popover-foreground: 158 12% 15%;
+
+    --primary: 158 35% 45%;
+    --primary-foreground: 152 30% 98%;
+
+    --secondary: 152 30% 92%;
+    --secondary-foreground: 158 12% 15%;
+
+    --muted: 152 25% 94%;
+    --muted-foreground: 158 8% 35%;
+
+    --accent: 198 40% 95%;
+    --accent-foreground: 198 45% 25%;
+
+    --destructive: 0 70% 70%;
+    --destructive-foreground: 152 30% 98%;
+
+    --border: 152 20% 88%;
+    --input: 152 20% 92%;
+    --ring: 158 35% 45%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
