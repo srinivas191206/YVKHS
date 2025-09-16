@@ -251,8 +251,8 @@
 
                     <div class="hidden md:flex items-center gap-4">
                         <div class="text-right">
-                            <p class="text-sm font-medium">Dr. Sarah Miller</p>
-                            <p class="text-xs text-white/70">Health Center Admin</p>
+                            <p id="header-admin-name" class="text-sm font-medium">Dr. Sarah Miller</p>
+                            <p id="header-admin-role" class="text-xs text-white/70">Health Center Admin</p>
                         </div>
                         <div class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                             <i data-lucide="users" class="w-5 h-5"></i>
@@ -719,23 +719,28 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div class="healthcare-card rounded-2xl p-6">
                                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Profile Settings</h3>
-                                    <div class="space-y-4">
+                                    <form id="profile-settings-form" class="space-y-4">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">Center Name</label>
-                                            <input type="text" value="Village Health Center" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                            <input id="center-name" type="text" value="Village Health Center" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-teal focus:border-transparent">
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Administrator</label>
-                                            <input type="text" value="Dr. Sarah Miller" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Administrator Name</label>
+                                            <input id="admin-name" type="text" value="Dr. Sarah Miller" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-teal focus:border-transparent">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Administrator Role</label>
+                                            <input id="admin-role" type="text" value="Health Center Admin" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-teal focus:border-transparent">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">Contact Number</label>
-                                            <input type="tel" value="+91 9876543210" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                                            <input id="contact-number" type="tel" value="+91 9876543210" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-deep-teal focus:border-transparent">
                                         </div>
-                                        <button class="bg-deep-teal text-white px-4 py-2 rounded-lg hover:bg-deep-teal/90">
+                                        <button type="submit" class="bg-deep-teal text-white px-4 py-2 rounded-lg hover:bg-deep-teal/90 transition-colors">
+                                            <i data-lucide="check" class="w-4 h-4 inline mr-2"></i>
                                             Save Changes
                                         </button>
-                                    </div>
+                                    </form>
                                 </div>
                                 
                                 <div class="healthcare-card rounded-2xl p-6">
@@ -881,9 +886,29 @@
         }
         
         function updateAdminInfo() {
-            const adminId = localStorage.getItem('adminId') || 'Admin';
-            // You can update the header admin name here if needed
-            // For now, keeping the default "Dr. Sarah Miller"
+            // Get values from localStorage with defaults
+            const centerName = localStorage.getItem('centerName') || 'Village Health Center';
+            const adminName = localStorage.getItem('adminName') || 'Dr. Sarah Miller';
+            const adminRole = localStorage.getItem('adminRole') || 'Health Center Admin';
+            const contactNumber = localStorage.getItem('contactNumber') || '+91 9876543210';
+            
+            // Update header
+            const headerNameEl = document.getElementById('header-admin-name');
+            const headerRoleEl = document.getElementById('header-admin-role');
+            
+            if (headerNameEl) headerNameEl.textContent = adminName;
+            if (headerRoleEl) headerRoleEl.textContent = adminRole;
+            
+            // Update settings form if it exists
+            const centerNameInput = document.getElementById('center-name');
+            const adminNameInput = document.getElementById('admin-name');
+            const adminRoleInput = document.getElementById('admin-role');
+            const contactNumberInput = document.getElementById('contact-number');
+            
+            if (centerNameInput) centerNameInput.value = centerName;
+            if (adminNameInput) adminNameInput.value = adminName;
+            if (adminRoleInput) adminRoleInput.value = adminRole;
+            if (contactNumberInput) contactNumberInput.value = contactNumber;
         }
         
         function logout() {
@@ -922,6 +947,59 @@
                 showDashboard();
             }
         }
+        
+        // Handle profile settings form submission
+        function handleProfileSettingsSubmit(event) {
+            event.preventDefault();
+            
+            const centerName = document.getElementById('center-name').value;
+            const adminName = document.getElementById('admin-name').value;
+            const adminRole = document.getElementById('admin-role').value;
+            const contactNumber = document.getElementById('contact-number').value;
+            
+            // Save to localStorage
+            localStorage.setItem('centerName', centerName);
+            localStorage.setItem('adminName', adminName);
+            localStorage.setItem('adminRole', adminRole);
+            localStorage.setItem('contactNumber', contactNumber);
+            
+            // Update header immediately
+            updateAdminInfo();
+            
+            // Show success message
+            showSaveSuccessMessage();
+        }
+        
+        // Show success message when settings are saved
+        function showSaveSuccessMessage() {
+            const button = document.querySelector('#profile-settings-form button[type="submit"]');
+            const originalText = button.innerHTML;
+            
+            button.innerHTML = '<i data-lucide="check" class="w-4 h-4 inline mr-2"></i>Settings Saved!';
+            button.classList.add('bg-success-green');
+            button.classList.remove('bg-deep-teal');
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.classList.remove('bg-success-green');
+                button.classList.add('bg-deep-teal');
+                lucide.createIcons();
+            }, 2000);
+        }
+        
+        // Set up profile settings form event listener
+        function setupProfileSettingsForm() {
+            const profileForm = document.getElementById('profile-settings-form');
+            if (profileForm) {
+                // Remove any existing listeners to prevent duplicates
+                profileForm.removeEventListener('submit', handleProfileSettingsSubmit);
+                // Add the event listener
+                profileForm.addEventListener('submit', handleProfileSettingsSubmit);
+                
+                // Load saved values from localStorage
+                updateAdminInfo();
+            }
+        }
 
         // Navigation functions
         function showSection(sectionName) {
@@ -939,6 +1017,11 @@
             if (targetSection) {
                 targetSection.classList.add('active');
                 targetSection.classList.remove('hidden');
+            }
+            
+            // Set up settings form listener when settings section is shown
+            if (sectionName === 'settings') {
+                setupProfileSettingsForm();
             }
             
             // Update sidebar active state
@@ -1014,6 +1097,12 @@
             document.getElementById('login-form').addEventListener('submit', handleLogin);
             document.getElementById('toggle-password').addEventListener('click', togglePassword);
             
+            // Set up profile settings form listener
+            const profileForm = document.getElementById('profile-settings-form');
+            if (profileForm) {
+                profileForm.addEventListener('submit', handleProfileSettingsSubmit);
+            }
+            
             // Check if user is already authenticated
             checkAuthStatus();
             
@@ -1040,6 +1129,11 @@
             if (targetSection) {
                 targetSection.classList.add('active');
                 targetSection.classList.remove('hidden');
+            }
+            
+            // Set up settings form listener when settings section is shown
+            if (sectionName === 'settings') {
+                setupProfileSettingsForm();
             }
             
             // Update sidebar active state
